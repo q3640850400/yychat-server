@@ -10,7 +10,7 @@ const wss = new WebSocketServer({
 })
 console.log("[SERVER]waiting for connections......")
 wss.on('connection', function (ws, req) {
-    console.log(`[SERVER] 已连接`);
+    console.log( `${new Date()}[SERVER] ${req.headers.flueid}已连接`);
     var MyRoom;
     var MyflueID = req.headers.flueid;
     if (WaitingRooms.size === 0) {//如果等候室没有房间，就创建一个新房间
@@ -42,7 +42,8 @@ wss.on('connection', function (ws, req) {
             return
         }
     })
-    console.log(`当前等待房间数：${WaitingRooms.size}  游戏房间数：${GamingRooms.size}`)
+    console.log(`${new Date()}
+    [SERVER]当前等待房间数：${WaitingRooms.size}  游戏房间数：${GamingRooms.size}`)
 
     ws.on('message', function (message) {
         console.log(`[SERVER] Received [${MyflueID}]: ${message}`);
@@ -134,6 +135,11 @@ wss.on('connection', function (ws, req) {
                 })
                 break
             }
+        }
+        if(MyRoom.links.size===0){
+            GamingRooms.delete(MyRoom.RoomNo)
+            console.log(`${new Date()}[SERVER]游戏房间数-1 
+            [SERVER]当前等待房间数：${WaitingRooms.size}  游戏房间数：${GamingRooms.size}`)
         }
     })
 });
