@@ -32,6 +32,12 @@ wss.on('connection', function (ws, req) {
             MyRoom.playerstate[MyflueID] = 0
             var outmsg = { code: 'sys', data: `你的房间号: ${key}` }
             ws.send(JSON.stringify(outmsg))
+            let outmsg={code:'join',data:MyflueID}
+            MyRoom.links.forEach((client)=>{
+                if(client!==ws && client.readyState===WebSocket.OPEN){
+                    client.send(outmsg)
+                }
+            })
             // ws.send(`你的房间号: ${key}`, (err) => {
             //     if (err) { console.log(`[SERVER] error: ${err}`); }
             // });
