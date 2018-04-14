@@ -10,7 +10,7 @@ const wss = new WebSocketServer({
 })
 console.log(`[SERVER]waiting for connections...... || ${new Date()}`)
 wss.on('connection', function (ws, req) {
-    console.log(`${new Date()}[SERVER] [${req.headers.flueid}]已连接 || ${new Date()}`);
+    console.log(`[SERVER] [${req.headers.flueid}]已连接 || ${new Date()}`);
     var MyRoom;
     var MyflueID = req.headers.flueid;
     if (WaitingRooms.size === 0) {//如果等候室没有房间，就创建一个新房间
@@ -67,12 +67,13 @@ wss.on('connection', function (ws, req) {
             }
             case 'ready1': {
                 MyRoom.playerstate[MyflueID] = 1
-                if (MyRoom.links.size === MyRoom.gamers) {
+                if (MyRoom.links.size == MyRoom.gamers) {
                     let m = true;//满人时
                     MyRoom.playerstate.forEach((val, key) => {//如果所有人都准备好，就开始游戏
                         if (val !== 1) { m = false }
                     })
                     if (m) {
+                        console.log('aka4')
                         let outmsg = { code: 'start' }
                         MyRoom.links.forEach((client) => {
                             if (client.readyState === WebSocket.OPEN) {
@@ -163,7 +164,6 @@ wss.on('connection', function (ws, req) {
         if (MyRoom.links.size === 0) {
             WaitingRooms.delete(MyRoom.RoomNo)
             GamingRooms.delete(MyRoom.RoomNo)
-            console.log(`${new Date()}`)
             console.log(`[SERVER]当前等待房间数：${WaitingRooms.size}  游戏房间数：${GamingRooms.size} || ${new Date()}`)
         }
     })
