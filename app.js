@@ -15,7 +15,7 @@ wss.on('connection', function (ws, req) {
     var MyflueID = req.headers.flueid;
     if (WaitingRooms.size === 0) {//如果等候室没有房间，就创建一个新房间
         MyRoom = {
-            gamers: req.headers.gamers,
+            gamers: req.headers.gamers,//房间的玩家上限
             tetris_20: new Array(),
             RoomNo: MyflueID,
             gametime: 0,
@@ -31,10 +31,15 @@ wss.on('connection', function (ws, req) {
     WaitingRooms.forEach((val, key) => {
         if (val.links.size < val.gamers) {//如果等候室有房间，就加入一个房间
             val.links.add(ws);
+            let outmsg=null;
             MyRoom = val;
-            MyRoom.playerstate[MyflueID] = 0
+            MyRoom.playerstate.forEach((val,key)=>{//给自己发送目前房间里的所有人
+                outmsg={ code: 'join', data: key }
+                ws.send(JSON.stringify(outmsg))
+            })
+            MyRoom.playerstate.set(MyflueID,0)
             console.log(`[SERVER]房间[${MyRoom.RoomNo}]等待中，目前人数 ${val.links.size}/${val.gamers} || ${new Date()}`)
-            let outmsg = { code: 'sys', data: `你的房间号: ${key}` }
+            outmsg = { code: 'sys', data: `你的房间号: ${key}` }
             ws.send(JSON.stringify(outmsg))
             outmsg = { code: 'join', data: MyflueID }
             MyRoom.links.forEach((client) => {
@@ -42,6 +47,7 @@ wss.on('connection', function (ws, req) {
                     client.send(JSON.stringify(outmsg))
                 }
             })
+            
             // ws.send(`你的房间号: ${key}`, (err) => {
             //     if (err) { console.log(`[SERVER] error: ${err}`); }
             // });
@@ -60,20 +66,20 @@ wss.on('connection', function (ws, req) {
         var inmsg = JSON.parse(message)
         switch (inmsg.code) {
             case 'ready0': {
-                MyRoom.playerstate[MyflueID] = 0
+                MyRoom.playerstate.set(MyflueID,0)
                 let outmsg = { code: 'pool', data: MyRoom.tetris_20 }
                 ws.send(JSON.stringify(outmsg))
                 break
             }
             case 'ready1': {
-                MyRoom.playerstate[MyflueID] = 1
+                MyRoom.playerstate.set(MyflueID,1)
                 if (MyRoom.links.size == MyRoom.gamers) {
                     let m = true;//满人时
+                    console.log(MyRoom.playerstate)
                     MyRoom.playerstate.forEach((val, key) => {//如果所有人都准备好，就开始游戏
                         if (val !== 1) { m = false }
                     })
                     if (m) {
-                        console.log('aka4')
                         let outmsg = { code: 'start' }
                         MyRoom.links.forEach((client) => {
                             if (client.readyState === WebSocket.OPEN) {
