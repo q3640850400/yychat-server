@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>contract</title>
+    <style type="text/css">
+        * {
+            box-sizing: border-box;
+        }
+        
+        .left {
+            float: left;
+            width: 20%;
+            height: 650px;
+            color: red;
+            border: 1px solid red;
+            border-right: 20px solid cornflowerblue;
+        }
+        
+        .center {
+            position: relative;
+            float: left;
+            width: 60%;
+            height: 650px;
+            border: 1px solid darkcyan;
+        }
+        
+        .chatList {
+            width: 100%;
+            height: 500px;
+            overflow-y: scroll;
+        }
+        
+        .bottom {
+            position: absolute;
+            width: 100%;
+            height: 150px;
+            left: 0;
+            bottom: 0;
+            background: skyblue;
+        }
+        
+        .bottom textarea {
+            width: 70%;
+            height: 100%;
+            font-size: 18px;
+            ;
+            vertical-align: middle;
+            border: 1px solid red;
+            background: blanchedalmond;
+        }
+        
+        .bottom input {
+            width: 80px;
+            height: 40px;
+            margin-left: 30px;
+        }
+        
+        .right {
+            float: right;
+            color: #000000;
+            border-right: 0;
+            border-left: 20px solid cornflowerblue;
+        }
+    </style>
+</head>
+
+<body onload="loadTime()">
+    <div class="left" id="left">
+
+    </div>
+    <div class="center" id="center">
+        <div class="chatList" id="chatList">
+
+        </div>
+        <div class="bottom">
+            <textarea id="content" name="content"></textarea>
+            <input type="button" name="send" id="send" value="点击发送" onclick="sendMessage()" />
+        </div>
+    </div>
+    <div class="left right">
+        <p>1.不能发空消息</p>
+        <p>2.敏感字***显示</p>
+        <p>3.图片替换 开心，尴尬</p>
+        <p>4.显示聊天内容和时间</p>
+        <p>5.每发一条信息，随机显示名称，先把一些名称定义到array里面</p>
+    </div>
+
+
+
+</body>
+
+<head>
+    <style>
+        #chatlog {
+            position: absolute;
+            left: 10%;
+            bottom: 10%;
+            width: 200px;
+            height: 200px;
+            overflow-y: scroll;
+            border: 1px solid rgb(163, 219, 9);
+            background: rgb(196, 123, 15);
+            visibility: hidden;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="inputlog">
+
+    </div>
+    <div id="chatlog">
+
+    </div>
+</body>
+<script type="text/javascript">
+    window.onkeydown = function(event) {
+        console.log(event.keyCode)
+        switch (event.keyCode) {
+            case 17:
+                {
+                    document.getElementById("chatlog").style.visibility = "visible";
+                    break;
+                }
+        }
+    }
+    window.onkeypress = function(event) {
+        switch (event.keyCode) {
+            case 13:
+                {
+                    document.getElementById("chatlog").innerHTML = "hahaha"
+                    break;
+                }
+        }
+    }
+    window.onkeyup = function(event) {
+        switch (event.keyCode) {
+            case 17:
+                {
+                    document.getElementById("chatlog").style.visibility = "hidden";
+                    break;
+                }
+        }
+    }
+</script>
+<script type="text/javascript">
+    //  document.getElementById("chatList").scrollHeight; 
+    /* 
+      添加敏感字替换成**---8.10 
+     * */
+    function loadTime() {
+        var time = new Date();
+
+        var hours = (time.getHours()).toString();
+        if (hours.length < 2) {
+            hours = "0" + hours;
+        }
+        var minutes = (time.getMinutes()).toString();
+        if (minutes.length < 2) {
+            minutes = "0" + minutes;
+        }
+        var seconds = (time.getSeconds()).toString();
+        if (seconds.length < 2) {
+            seconds = "0" + seconds;
+        }
+        var timeReturn = hours + ":" + minutes + ":" + seconds;
+        document.getElementById("left").innerHTML = timeReturn;
+        return timeReturn;
+    }
+    setInterval("loadTime()", 1000);
+    var chatContents = "";
+    var count = 0;
+
+    function sendMessage() {
+        //通过调用randomName()函数来得到一个随机的名字 
+        var name = randomName();
+        //通过调用randomColor()函数来得到一个随机的颜色 
+        var colorR = randomColor();
+        //得到textarea中的内容 
+        var content = document.getElementById("content").value;
+        //判断输入内容是否为空 
+        if (content == "") {
+            alert("输入内容不能为空！！！");
+            return;
+        }
+        //通过正则表达式来获取要替换的字符串 
+        var regExp = /藏独|台独|傻逼|你大爷/g;
+        var regExp1 = /开心/g;
+        var regExp2 = /尴尬/g;
+        //   var imgReplace = content.replace(regExp,"高兴"); 
+        //获取开心图片路径 
+        var path1 = '<img src="img/chui.png"/>';
+        //获取尴尬图片的路径 
+        var path2 = '<img src="img/mouse.png"/>';
+        //敏感字替换； 
+        content = content.replace(regExp, "***");
+        //将开心替换成开心图片的字符串； 
+        //   txtReplace(content); 
+        var imgReplace = content.replace(regExp1, path1);
+        //   alert(imgReplace); 
+        //将尴尬替换成尴尬图片的字符串； 
+        imgReplace = imgReplace.replace(regExp2, path2);
+        //   alert(imgReplace); 
+        var chatContent = "<span>" + name + ":" + "</span>" + " " + imgReplace;
+        //   字符串拼接聊天记录 
+        chatContents = chatContents + chatContent + " " + loadTime() + "<br/>";
+        document.getElementById("chatList").innerHTML = chatContents;
+        //点击发送后，textarea中的内容设为空 
+        document.getElementById("content").value = "";
+        var txtColor = document.getElementsByTagName("span")[count];
+        count++;
+        //设置span的随机颜色 
+        txtColor.style.color = colorR;
+    }
+
+    function randomName() {
+        var i = parseInt(Math.random() * (6 - 0 + 1) + 0);
+        var arrName = new Array("果果", "六六", "格格", "明明", "小花", "兰兰", "花花");
+        return arrName[i];
+    }
+
+    function randomColor() {
+        var r = parseInt(Math.random() * (255 - 0 + 1) + 0).toString(16);
+        if (r.length < 2) {
+            r = "0" + r;
+        }
+        var g = parseInt(Math.random() * (255 - 0 + 1) + 0).toString(16);
+        if (g.length < 2) {
+            g = "0" + g;
+        }
+        var b = parseInt(Math.random() * (255 - 0 + 1) + 0).toString(16);
+        if (b.length < 2) {
+            b = "0" + b;
+        }
+        return "#" + r + g + b;
+    }
+</script>
+
+</html>

@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <style>
+        #yychat {
+            position: absolute;
+            left: 10%;
+            bottom: 10%;
+            visibility: hidden;
+        }
+        
+        #chatlog {
+            width: 200px;
+            height: 200px;
+            overflow-y: scroll;
+            border: 1px solid rgb(2, 243, 62);
+        }
+    </style>
+</head>
+
+<body>
+    <div id="yychat">
+        <div id="chatlog">
+        </div>
+        <input type="text" id="chatinput">
+    </div>
+
+
+</body>
+<script type="text/javascript">
+    var ws = null;
+    var logs = "";
+    var name = "";
+    var content = null;
+    var newMsg = false;
+    var ycommand = 0;
+    var jcommand = 0;
+    var titleInit = document.title;
+    var isShine = true;
+
+    setInterval(function() {
+        var title = document.title;
+        if (isShine == true) {
+            if (/新/.test(title) == false) {
+                document.title = '【你有新消息】';
+            } else {
+                document.title = '【　　　　　】';
+            }
+        } else {
+            document.title = titleInit;
+        }
+    }, 500);
+
+    window.onfocus = function() {
+        isShine = false;
+    };
+    window.onblur = function() {
+        isShine = true;
+    };
+
+    // for IE
+    document.onfocusin = function() {
+        isShine = false;
+    };
+    document.onfocusout = function() {
+        isShine = true;
+    };
+    window.onkeypress = function(event) {
+        console.log(event.keyCode)
+        switch (event.keyCode) {
+            case 121:
+                {
+                    if (ws == null) {
+                        ycommand++;
+                        if (ycommand === 2) {
+                            name = "yy"
+                            wsconnect();
+                        }
+                    }
+                    break;
+                }
+            case 106:
+                {
+                    if (ws == null) {
+                        ycommand++;
+                        if (ycommand === 2) {
+                            name = "jj"
+                            wsconnect();
+                        }
+                    }
+                    break;
+                }
+            case 13:
+                {
+                    yysendMsg();
+                    break;
+                }
+        }
+    }
+    window.onkeyup = function(event) {
+        switch (event.keyCode) {
+            case 17:
+                {
+                    if (document.getElementById("yychat").style.getPropertyValue("visibility") == "visible") {
+                        document.getElementById("yychat").style.visibility = "hidden";
+                    } else {
+                        document.getElementById("yychat").style.visibility = "visible";
+                        document.getElementById("chatinput").focus();
+                    }
+                    break;
+                }
+        }
+    }
+
+    /*
+     *建立ws链接
+     */
+    function wsconnect() {
+        if (ws == null) {
+            // 打开一个WebSocket:
+            // ws = new WebSocket('ws://localhost:7777/test');
+            ws = new WebSocket('ws://139.199.37.143:7777/test');
+            // 响应onmessage事件:
+            ws.onopen = function() {
+                console.log('已连接');
+                ws.send(name + '进来了' + loadTime() + "<br/>");
+                document.getElementById("yychat").style.visibility = "visible";
+                document.getElementById("chatinput").focus();
+            }
+            ws.onmessage = function(msg) {
+                console.log(msg);
+                logs = logs + msg.data;
+                document.getElementById("chatlog").innerHTML = logs;
+                newMsg = true;
+                setInterval(function() {
+                    var title = document.title;
+                    if (isShine == true) {
+                        if (/新/.test(title) == false) {
+                            document.title = '【你有新消息】';
+                        } else {
+                            document.title = '【　　　　　】';
+                        }
+                    } else {
+                        document.title = titleInit;
+                    }
+                }, 500);
+            };
+            ws.onclose = function(msg) {
+                console.log("连接断开了")
+                ws = null;
+            }
+        } else {
+            console.log("连接已存在")
+        }
+
+    }
+
+
+    /*
+     *与服务器通讯，发送聊天信息
+     */
+    function yysendMsg() {
+        content = name + ": " + document.getElementById("chatinput").value + "  " + loadTime() + "<br/>"
+        console.log(content)
+        if (ws != null) {
+            // 给服务器发送一个字符串:
+
+            ws.send(content);
+            document.getElementById("chatinput").value = ""
+        } else {
+            console.log(`ws未连接！`)
+        }
+
+    }
+
+    function loadTime() {
+        var time = new Date();
+
+        var hours = (time.getHours()).toString();
+        if (hours.length < 2) {
+            hours = "0" + hours;
+        }
+        var minutes = (time.getMinutes()).toString();
+        if (minutes.length < 2) {
+            minutes = "0" + minutes;
+        }
+        var seconds = (time.getSeconds()).toString();
+        if (seconds.length < 2) {
+            seconds = "0" + seconds;
+        }
+        var timeReturn = hours + ":" + minutes + ":" + seconds;
+        return timeReturn;
+    }
+</script>
+
+</html>
