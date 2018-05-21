@@ -15,17 +15,21 @@ const wss = new WebSocketServer({
  */
 const mysql = require('mysql');
 var connection = mysql.createConnection({
-    host: 'localhost',
-    port: '3306',
+    host: '172.21.0.7',
+    port: '12315',
     user: 'root',
     password: 'Yggzs@2018',
-    database: 'sakila'
+    database: 'yychat'
 });
 connection.connect();
-connection.query('SELECT * from country', function(error, results, fields) {
+// connection.query("insert into user_information(name,password,create_time) values ('gg','44',now())", function(error, results, fields) {
+// connection.query('delete from user_information', function(error, results, fields) {
+// connection.query("select * from user_information", function(error, results, fields) {
+connection.query('drop table user_information', function(error, results, fields) {
     if (error) throw error;
-    console.log('The solution is: ', results);
+    console.log('The results is: ', results);
 });
+
 
 /*
  *服务器代码
