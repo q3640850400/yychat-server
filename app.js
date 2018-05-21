@@ -9,6 +9,27 @@ const WebSocketServer = WebSocket.Server;
 const wss = new WebSocketServer({
     port: 7777
 })
+
+/*
+ *数据库连接
+ */
+const mysql = require('mysql');
+var connection = mysql.createConnection({
+    host: 'localhost',
+    port: '3306',
+    user: 'root',
+    password: 'Yggzs@2018',
+    database: 'sakila'
+});
+connection.connect();
+connection.query('SELECT * from country', function(error, results, fields) {
+    if (error) throw error;
+    console.log('The solution is: ', results);
+});
+
+/*
+ *服务器代码
+ */
 console.log(`[SERVER]yychat等待连接...... || ${new Date()}`)
 wss.on('connection', function(ws, req) {
     console.log(req)
