@@ -23,6 +23,10 @@
             overflow-y: scroll;
             border: 1px solid rgb(2, 243, 62);
         }
+        
+        #chatinput {
+            border: 1px solid rgb(111, 9, 124);
+        }
     </style>
 </head>
 
@@ -31,7 +35,7 @@
         <div id="chatstate"></div>
         <div id="chatlog">
         </div>
-        <input type="text" id="chatinput">
+        <input type="text" id="chatinput" size="25">
     </div>
 
 
@@ -75,7 +79,7 @@
                 setTimeout(() => {
                     sysMsgQueue.shift();
                     getSysMsg();
-                }, 3000);
+                }, 6000);
             } else {
                 isShowingSysMsg = false;
                 document.getElementById("chatstate").innerHTML = '';
@@ -209,10 +213,8 @@
             if (ws == null) {
 
                 // 打开一个WebSocket:
-                ws = new WebSocket(
-                    'ws://localhost:7777/test'
-                );
-                // ws = new WebSocket('ws://139.199.37.143:7777/test');
+                // ws = new WebSocket('ws://localhost:7777/test');
+                ws = new WebSocket('ws://139.199.37.143:7777/test');
 
                 // 响应onmessage事件:
                 ws.onopen = function() {
