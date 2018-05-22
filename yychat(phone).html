@@ -6,9 +6,9 @@
     <style>
         #yychat {
             position: absolute;
-            left: 10%;
-            bottom: 10%;
-            visibility: hidden;
+            left: 0;
+            top: 0;
+            /* visibility: hidden; */
         }
         
         #chatstate {
@@ -43,9 +43,14 @@
 </body>
 <script type="text/javascript">
     (function() {
+        function randomName() {
+            var i = parseInt(Math.random() * (6 - 0 + 1) + 0);
+            var arrName = new Array("果果", "六六", "格格", "明明", "小花", "兰兰", "花花");
+            return arrName[i];
+        }
         var ws = null;
         var logs = "";
-        var name = "";
+        var name = randomName();
         var content = null;
         var newMsg = false;
         var ycommand = 0;
@@ -58,7 +63,7 @@
         var sysMsgQueue = [];
         var isShowingSysMsg = false; //是否正在显示较高优先级的系统信息
         var gg = 0;
-
+        wsconnect();
         /*
          *把新的系统消息推进消息队列
          */
@@ -113,7 +118,7 @@
         };
         document.onfocusout = function() {
             isShine = true;
-            document.getElementById("yychat").style.visibility = "hidden";
+            // document.getElementById("yychat").style.visibility = "hidden";
         };
 
 
@@ -123,7 +128,7 @@
             isShine = false;
         };
         window.onblur = function() {
-            document.getElementById("yychat").style.visibility = "hidden";
+            // document.getElementById("yychat").style.visibility = "hidden";
             isShine = true;
         };
 
